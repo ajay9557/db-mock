@@ -3,9 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	_ "fmt"
-	"github.com/DATA-DOG/go-sqlmock"
 	"log"
 	"reflect"
 	"testing"
@@ -29,7 +27,6 @@ func NewMock() (*sql.DB, sqlmock.Sqlmock) {
 func Test_Insert(t *testing.T) {
 	db, mock := NewMock()
 	query := "insert into user values(?,?,?,?)"
-	//query1 := "insert into user values(?,?,?,?)"
 
 	testcases := []struct {
 		usr  user
@@ -58,9 +55,6 @@ func Test_Insert(t *testing.T) {
 			},
 		},
 	}
-
-	//prep := mock.ExpectPrepare(query)
-	//prep.ExpectExec().WithArgs(u.id, u.name, u.age, u.address).WillReturnResult(sqlmock.NewResult(0, 1))
 	for _, tcs := range testcases {
 		err := Insert(db, &tcs.usr)
 		if !reflect.DeepEqual(err, tcs.err) {
@@ -183,13 +177,10 @@ func TestUpdate(t *testing.T) {
 			},
 		},
 	}
-
-	//prep := mock.ExpectPrepare(query)
-	//prep.ExpectExec().WithArgs(u.name, u.id).WillReturnResult(sqlmock.NewResult(0, 1))
 	for _, tcs := range testcases {
 		err := Update(db, &tcs.usr)
 		if !reflect.DeepEqual(err, tcs.err) {
-			fmt.Println("error in test insert")
+			t.Error("error in test insert")
 		}
 	}
 }
