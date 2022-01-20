@@ -46,8 +46,8 @@ func main() {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected")
-
-	err = create()
+	
+	err=create()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,8 +62,8 @@ func main() {
 	}
 	fmt.Printf("ID of added album: %v\n", albID)
 
-	err = updateAlbum(2)
-	if err != nil {
+    err=updateAlbum(2)
+	if err!=nil{
 		fmt.Printf("Update failed")
 	}
 
@@ -73,8 +73,8 @@ func main() {
 	}
 	fmt.Printf("Albums fund: %v\n", albums)
 
-	err = delete(3)
-	if err != nil {
+	err=delete(3)
+	if err!=nil{
 		fmt.Printf("Update failed")
 	}
 
@@ -83,6 +83,11 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("Album found: %v\n", alb)
+
+	
+
+	
+
 
 	/*bowler := []Bowler{
 		{Name: "Lord_Shardhul", Wickets: 200, Age: 27},
@@ -104,7 +109,7 @@ func main() {
 
 }*/
 
-func create() error {
+func create() error{
 	_, err := db.Exec("CREATE TABLE album if not exists(id INT AUTO_INCREMENT NOT NULL,title VARCHAR(128) NOT NULL,artist VARCHAR(255) NOT NULL,price DECIMAL(5,2) NOT NULL,PRIMARY KEY (`id`))")
 
 	if err != nil {
@@ -113,19 +118,19 @@ func create() error {
 	return nil
 }
 
-func updateAlbum(id int) error {
-	_, err := db.Exec("Update Album set Price=79.99 where id=?", id)
-	if err != nil {
-		//fmt.Println("Update failed")
+func updateAlbum(id int) error{
+	_,err:=db.Exec("Update Album set Price=79.99 where id=?",id)
+	if err!=nil{
+        //fmt.Println("Update failed")
 		return err
 	}
 	return nil
 }
 
-func delete(id int) error {
-	_, err := db.Exec("Delete From Album where id=?", id)
-	if err != nil {
-		//fmt.Println("Update failed")
+func delete(id int) error{
+	_,err:=db.Exec("Delete From Album where id=?",id)
+	if err!=nil{
+        //fmt.Println("Update failed")
 		return err
 	}
 	return nil
