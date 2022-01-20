@@ -26,7 +26,7 @@ var (
 var users []User
 
 func Read(db *sql.DB) ([]User, error) {
-	rows, err := db.Query("select id from users")
+	rows, err := db.Query("select * from users")
 
 	if err != nil {
 		return []User{}, errors.New("couldn't fetch records")
@@ -48,7 +48,7 @@ func Read(db *sql.DB) ([]User, error) {
 }
 
 func ReadById(db *sql.DB, id int) (User, error) {
-	sqlRows := db.QueryRow("select id from users where id = ?", id)
+	sqlRows := db.QueryRow("select * from users where id = ?", id)
 
 	if sqlRows.Err() != nil {
 		return User{}, sql.ErrNoRows
@@ -108,10 +108,18 @@ func main() {
 
 	defer db.Close()
 
-	rows, _ := Read(db)
-	fmt.Print("TOtal: ", rows)
+	InsertRecord(db, 21, "Ridhdhish", "India")
+	InsertRecord(db, 18, "Naruto", "Japan")
 
-	_, err = ReadById(db, 1)
+	UpdateRecord(db, "Rid", 1)
+	data, err := ReadById(db, 1)
+	fmt.Println(data)
+
+	DeleteRecord(db, 1)
+
+	rows, _ := Read(db)
+	fmt.Print("All Records: ", rows)
+
 	if err != nil {
 		fmt.Println(err)
 	}

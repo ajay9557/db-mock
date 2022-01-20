@@ -11,7 +11,7 @@ import (
 )
 
 func TestReadById(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 	if err != nil {
 		fmt.Println(err)
@@ -27,9 +27,9 @@ func TestReadById(t *testing.T) {
 		expected  User
 		mockQuery *sqlmock.ExpectedQuery
 	}{
-		{desc: "Case1", expected: User{id: 1, name: "Naruto", age: 21, address: "Surat"}, id: 1, mockQuery: mock.ExpectQuery("select id from users where id = ?").WithArgs(1).WillReturnRows(rows)},
+		{desc: "Case1", expected: User{id: 1, name: "Naruto", age: 21, address: "Surat"}, id: 1, mockQuery: mock.ExpectQuery("select * from users where id = ?").WithArgs(1).WillReturnRows(rows)},
 		{desc: "Case2", expected: User{}, id: 2, mockQuery: nil},
-		{desc: "Case3", expected: User{}, id: 1, mockQuery: mock.ExpectQuery("select id from users").WillReturnError(errors.New("Connection lost"))},
+		{desc: "Case3", expected: User{}, id: 1, mockQuery: mock.ExpectQuery("select * from users where id = ?").WithArgs(1).WillReturnError(errors.New("Connection lost"))},
 	}
 
 	for _, test := range tests {
@@ -44,7 +44,7 @@ func TestReadById(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
-	db, mock, err := sqlmock.New()
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 
 	if err != nil {
 		fmt.Println(err)
@@ -61,9 +61,9 @@ func TestRead(t *testing.T) {
 		{desc: "Case1", expected: []User{
 			{id: 1, name: "Naruto", age: 21, address: "Japan"},
 			{id: 2, name: "Ichigo", age: 18, address: "America"},
-		}, mockQuery: mock.ExpectQuery("select id from users").WillReturnRows(rows)},
-		{desc: "Case2", expected: []User{}, mockQuery: mock.ExpectQuery("select id from users").WillReturnRows(rows2)},
-		{desc: "Case3", expected: []User{}, mockQuery: mock.ExpectQuery("select id from users").WillReturnError(errors.New("Connection lost"))},
+		}, mockQuery: mock.ExpectQuery("select * from users").WillReturnRows(rows)},
+		{desc: "Case2", expected: []User{}, mockQuery: mock.ExpectQuery("select * from users").WillReturnRows(rows2)},
+		{desc: "Case3", expected: []User{}, mockQuery: mock.ExpectQuery("select * from users").WillReturnError(errors.New("Connection lost"))},
 	}
 
 	for _, test := range tests {
