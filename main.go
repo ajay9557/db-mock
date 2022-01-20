@@ -81,7 +81,7 @@ func main() {
 }
 
 func create() error {
-	_, err := db.Exec("CREATE TABLE album if not exists(id INT AUTO_INCREMENT NOT NULL,title VARCHAR(128) NOT NULL,artist VARCHAR(255) NOT NULL,price DECIMAL(5,2) NOT NULL,PRIMARY KEY (`id`))")
+	_, err := db.Exec("CREATE TABLE if not exists album(id INT AUTO_INCREMENT NOT NULL,title VARCHAR(128) NOT NULL,artist VARCHAR(255) NOT NULL,price DECIMAL(5,2) NOT NULL,PRIMARY KEY (`id`))")
 
 	if err != nil {
 		return err
