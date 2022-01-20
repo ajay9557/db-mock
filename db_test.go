@@ -93,6 +93,7 @@ func TestInsertRecord(t *testing.T) {
 	}{
 		{desc: "Case1", expected: 1, mockCall: mock.ExpectExec("insert into users(name, age, address) values(?, ?, ?)").WithArgs("Ridhdhish", 21, "Surat").WillReturnResult(sqlmock.NewResult(1, 1))},
 		{desc: "Case2", expected: 0, mockCall: mock.ExpectExec("insert into users(name, age, address) values(?, ?, ?)").WithArgs("Ridhdhish", 21).WillReturnResult(sqlmock.NewResult(0, 0))},
+		{desc: "Case3", expected: 0, mockCall: mock.ExpectExec("insert into users(name, age, address) values(?, ?, ?)").WithArgs("Ridhdhish", 21, "Surat").WillReturnError(errors.New("Connection Lost"))},
 	}
 
 	for _, test := range tests {
@@ -122,6 +123,7 @@ func TestUpdateRecord(t *testing.T) {
 	}{
 		{desc: "Case1", expected: 1, mockCall: mock.ExpectExec("update users set name = ? where id = ?").WithArgs("Naruto", 1).WillReturnResult(sqlmock.NewResult(1, 1))},
 		{desc: "Case2", expected: 0, mockCall: mock.ExpectExec("update users set name = ? where id = ?").WithArgs("Naruto", 2).WillReturnResult(sqlmock.NewResult(0, 0))},
+		{desc: "Case3", expected: 0, mockCall: mock.ExpectExec("update users set name = ? where id = ?").WithArgs("Naruto", 1).WillReturnError(errors.New("Connection lost"))},
 	}
 
 	mock.NewRows([]string{"id", "name", "age", "address"}).AddRow(1, "Ridhdhish", 21, "Surat")
@@ -154,6 +156,7 @@ func TestDeleteRecord(t *testing.T) {
 	}{
 		{desc: "Case1", id: 2, expected: 2, mockCall: mock.ExpectExec("delete from users where id = ?").WithArgs(2).WillReturnResult(sqlmock.NewResult(2, 1))},
 		{desc: "Case2", id: 8, expected: 0, mockCall: mock.ExpectExec("delete from users where id = ?").WithArgs(8).WillReturnResult(sqlmock.NewResult(0, 0))},
+		{desc: "Case3", id: 2, expected: 0, mockCall: mock.ExpectExec("delete from users where id = ?").WithArgs(2).WillReturnError(errors.New("Connection lost"))},
 	}
 
 	mock.NewRows([]string{"id", "name", "age", "address"}).AddRow(2, "Ridhdhish", 21, "Surat")
