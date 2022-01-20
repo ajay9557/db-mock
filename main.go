@@ -21,12 +21,6 @@ type Album struct {
 	Price  float64
 }
 
-/*type Bowler struct{
-	Name string
-	Age int64
-	Wickets int64
-}*/
-
 func main() {
 	cfg := mysql.Config{
 		User:   "root",
@@ -84,25 +78,7 @@ func main() {
 	}
 	fmt.Printf("Album found: %v\n", alb)
 
-	/*bowler := []Bowler{
-		{Name: "Lord_Shardhul", Wickets: 200, Age: 27},
-		{Name: "Snake_Bhajji", Wickets: 10, Age: 57},
-		{Name: "SwingKing_Chahar", Wickets: 100, Age: 27},
-	}
-	addBowlers(bowler)
-
-	updateBowlers("Snake_Bhajji")*/
 }
-
-/*func updateBowlers(name string) error {
-	_, err := db.Exec("Update Bowler set wickets=5 where name=?", name)
-	if err != nil {
-		fmt.Println("Update failed")
-		return err
-	}
-	return nil
-
-}*/
 
 func create() error {
 	_, err := db.Exec("CREATE TABLE album if not exists(id INT AUTO_INCREMENT NOT NULL,title VARCHAR(128) NOT NULL,artist VARCHAR(255) NOT NULL,price DECIMAL(5,2) NOT NULL,PRIMARY KEY (`id`))")
@@ -116,7 +92,7 @@ func create() error {
 func updateAlbum(id int) error {
 	_, err := db.Exec("Update Album set Price=79.99 where id=?", id)
 	if err != nil {
-		//fmt.Println("Update failed")
+
 		return err
 	}
 	return nil
@@ -125,7 +101,7 @@ func updateAlbum(id int) error {
 func delete(id int) error {
 	_, err := db.Exec("Delete From Album where id=?", id)
 	if err != nil {
-		//fmt.Println("Update failed")
+
 		return err
 	}
 	return nil
@@ -166,7 +142,7 @@ func albumByID(id int64) (Album, error) {
 }
 
 func addAlbum(alb Album) (int64, error) {
-	//fmt.Println(alb)
+
 	result, err := db.Exec("INSERT INTO album(title,artist,price) VALUES (?,?,?)", alb.Title, alb.Artist, alb.Price)
 	if err != nil {
 		return 0, fmt.Errorf("addA;bum: %v", err)
@@ -177,14 +153,3 @@ func addAlbum(alb Album) (int64, error) {
 	}
 	return id, nil
 }
-
-/*func addBowlers(bowlers []Bowler) {
-	for _, bowler := range bowlers {
-		_, err := db.Exec("Insert into Bowler(Name,Age,Wickets) VALUES (?,?,?)", bowler.Name, bowler.Age, bowler.Wickets)
-		if err != nil {
-			fmt.Printf("ehey")
-		}
-
-	}
-
-}*/
