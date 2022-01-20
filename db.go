@@ -4,33 +4,50 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type User struct {
-	id      int
+	id      int64
 	name    string
 	age     int
 	address string
 }
 
-func Read(db *sql.DB) (int64, error) {
+var (
+	id      int
+	name    string
+	age     string
+	address string
+)
+
+var users []User
+
+func Read(db *sql.DB) ([]User, error) {
 	rows, err := db.Query("select id from users")
-	count := 0
 
 	if err != nil {
-		return 0, errors.New("couldn't fetch records")
+		return []User{}, errors.New("couldn't fetch records")
 	}
 
 	for rows.Next() {
-		count++
+		err := rows.Scan(&id, &name, &age, &address)
+
+		if err != nil {
+			return []User{}, err
+		}
+
+		convAge, _ := strconv.Atoi(age)
+		u := User{id: int64(id), name: name, age: convAge, address: address}
+		users = append(users, u)
 	}
 
-	return int64(count), nil
+	return users, nil
 }
 
-func FetchRecords(db *sql.DB, id int) (User, error) {
+func ReadById(db *sql.DB, id int) (User, error) {
 	sqlRows := db.QueryRow("select id from users where id = ?", id)
 
 	if sqlRows.Err() != nil {
@@ -50,9 +67,9 @@ func InsertRecord(db *sql.DB, age int, name, address string) (int64, error) {
 		return 0, errors.New("Couldn't insert record")
 	}
 
-	i, _ := result.RowsAffected()
+	id, _ := result.LastInsertId()
 
-	return i, nil
+	return id, nil
 }
 
 func UpdateRecord(db *sql.DB, name string, id int) (int64, error) {
@@ -78,7 +95,7 @@ func DeleteRecord(db *sql.DB, id int) (int64, error) {
 		return 0, errors.New("couldn't delete record")
 	}
 
-	i, _ := result.RowsAffected()
+	i, _ := result.LastInsertId()
 	return i, nil
 }
 
@@ -94,7 +111,7 @@ func main() {
 	rows, _ := Read(db)
 	fmt.Print("TOtal: ", rows)
 
-	_, err = FetchRecords(db, 1)
+	_, err = ReadById(db, 1)
 	if err != nil {
 		fmt.Println(err)
 	}
