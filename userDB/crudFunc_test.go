@@ -129,8 +129,8 @@ func TestDeleteRecord(t *testing.T) {
 		mockExec *sqlmock.ExpectedExec
 		expected error
 	}{
-		{id: 1, mockExec: mock.ExpectExec("UPDATE ? SET deletedFlag = 1 WHERE id = ?").WithArgs(tableName, 1).WillReturnResult(sqlmock.NewResult(1, 1)), expected: nil},
-		{id: 10, mockExec: mock.ExpectExec("UPDATE ? SET deletedFlag = 1 WHERE id = ?").WithArgs(tableName, 1).WillReturnError(errors.New("error deleting record")), expected: errors.New("error deleting record")},
+		{id: 1, mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").WithArgs(1).WillReturnResult(sqlmock.NewResult(1, 1)), expected: nil},
+		{id: 10, mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").WithArgs(1).WillReturnError(errors.New("error deleting record")), expected: errors.New("error deleting record")},
 	}
 
 	for _, testCase := range testCases {
@@ -160,14 +160,30 @@ func TestUpdateRecord(t *testing.T) {
 		mockExec *sqlmock.ExpectedExec
 		expected error
 	}{
-		{id: 1, column: "name", value: "John", mockExec: mock.ExpectExec("UPDATE ? SET ? = ? WHERE id = ?").WithArgs(tableName, "name", "John", 1).WillReturnResult(sqlmock.NewResult(1, 1)), expected: nil},
-		{id: 10, column: "name", value: "Jane", mockExec: mock.ExpectExec("UPDATE ? SET ? = ? WHERE id = ?").WithArgs(tableName, "name", "John", 10).WillReturnError(errors.New("error updating record")), expected: errors.New("error updating record")},
+		{
+			id:       1,
+			column:   "name",
+			value:    "John",
+			mockExec: mock.ExpectExec("UPDATE user SET name = 'John' WHERE id = 1;").WillReturnResult(sqlmock.NewResult(1, 1)),
+			expected: nil},
+		{
+			id:       1,
+			column:   "age",
+			value:    20,
+			mockExec: mock.ExpectExec("UPDATE user SET age = 20 WHERE id = 1;").WillReturnResult(sqlmock.NewResult(1, 1)),
+			expected: nil},
+		{
+			id:       10,
+			column:   "name",
+			value:    "Jane",
+			mockExec: mock.ExpectExec("UPDATE user SET name = 'Jane' WHERE id = 10;").WillReturnError(errors.New("error updating the records")),
+			expected: errors.New("error updating the records")},
 	}
 
 	for _, testCase := range testCases {
 		t.Run("", func(t *testing.T) {
 			err := UpdateRecord(db, tableName, testCase.id, testCase.column, testCase.value)
-			if errors.Is(err, testCase.expected) {
+			if err != nil && err.Error() != testCase.expected.Error() {
 				t.Errorf("expected error: %v, got: %v", nil, err)
 			}
 		})

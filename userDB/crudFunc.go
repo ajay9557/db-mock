@@ -50,7 +50,8 @@ func InsertValues(db *sql.DB, tableName string, id, age int, name string) (err e
 }
 
 func DeleteRecord(db *sql.DB, tableName string, pk int) error {
-	_, err := db.Exec("UPDATE ? SET deletedFlag = 1 WHERE id = ?", tableName, pk)
+	query := fmt.Sprintf("UPDATE %s SET deleted = 1 WHERE id = ?", tableName)
+	_, err := db.Exec(query, pk)
 	if err != nil {
 		return errors.New("error deleting the selected record")
 	}
@@ -58,7 +59,17 @@ func DeleteRecord(db *sql.DB, tableName string, pk int) error {
 }
 
 func UpdateRecord(db *sql.DB, tableName string, pk int, column string, value interface{}) error {
-	_, err := db.Exec("UPDATE ? SET ? = ? WHERE id = ?", tableName, column, value, pk)
+	var err error
+	var query string
+	switch value.(type) {
+	case string:
+		query = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE id = %v;", tableName, column, value.(string), pk)
+		_, err = db.Exec(query)
+	default:
+		query = fmt.Sprintf("UPDATE %s SET %s = %v WHERE id = %v;", tableName, column, value, pk)
+		_, err = db.Exec(query, value.(int), pk)
+	}
+
 	if err != nil {
 		return errors.New("error updating the records")
 	}
