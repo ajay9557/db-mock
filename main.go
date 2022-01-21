@@ -29,22 +29,22 @@ func (u *DbUser) Create(value User) (int64, int64, error) {
 
 	if err != nil {
 		fmt.Println("Error while inserting the record, err: ", err)
-		return -1, 0, err
+		return 0, -1, err
 	}
 
 	affect, err := res.RowsAffected()
 
 	if err != nil {
 		fmt.Println(err)
-		return -1, 0, err
+		return 0, -1, err
 	}
 
 	lastInsertId, err := res.LastInsertId()
 	fmt.Println("Records affected", affect)
 
 	if err != nil {
-		//log.Fatalf("Error in fetching the user %s", err)
-		return -1, 0, errors.New("Error in Query")
+
+		return 0, -1, errors.New("Error in Query")
 	}
 
 	return lastInsertId, affect, nil
@@ -58,7 +58,7 @@ func (u *DbUser) ReadByID(id int) (*User, error) {
 	rows, err := u.db.Query(query, id)
 
 	if err != nil {
-		//log.Fatalf("Error in fetching the user %s", err)
+
 		//return nil, errors.New("Error in Query")
 		return nil, err
 	}
@@ -96,7 +96,6 @@ func (u *DbUser) Read() (*User, error) {
 
 func (u *DbUser) Update(value string, id int) (int64, int64, error) {
 
-	//user := &User{}
 	query := "Update Users Set Name = ? where Id = ?"
 	/*stmt, err := u.db.Prepare(query)
 	if err != nil {
@@ -120,7 +119,6 @@ func (u *DbUser) Update(value string, id int) (int64, int64, error) {
 	fmt.Println("Records affected", affect)
 
 	if err != nil {
-		//log.Fatalf("Error in fetching the user %s", err)
 		return 0, -1, errors.New("Error in Query")
 	}
 
@@ -130,7 +128,6 @@ func (u *DbUser) Update(value string, id int) (int64, int64, error) {
 
 func (u *DbUser) Delete(id int) (int64, int64, error) {
 
-	//user := &User{}
 	query := "DELETE FROM Users WHERE Id = ?"
 	/*stmt, err := v.Prepare(query)
 	if err != nil {
@@ -154,7 +151,7 @@ func (u *DbUser) Delete(id int) (int64, int64, error) {
 	fmt.Println("Records affected", affect)
 
 	if err != nil {
-		//log.Fatalf("Error in fetching the user %s", err)
+
 		return 0, -1, errors.New("Error in Query")
 	}
 
@@ -174,10 +171,10 @@ func main() {
 		log.Println("Error in accessing the connection, err: ", err)
 	}
 
-	u.Create(User{0, "Rohit", 34, "Whitefield, Bangalore", false})
+	u.Create(User{0, "Mohit", 29, "Whitefield, Bangalore", false})
 	u.Read()
 	u.Read()
 	u.ReadByID(1)
 	u.Update("Shiv", 5)
-	u.Delete(11)
+	//u.Delete(11)
 }

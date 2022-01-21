@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -57,42 +58,35 @@ func Test_ReadByID(t *testing.T) {
 			expectedOutput: &User{Id: 5, Name: "Karun", Age: 20, Address: "HSR, Bangalore", Del: false},
 			mock: []interface{}{
 				mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
-		/*{
+		{
 			desc: "Case:2",
 			id:   15,
 			//query:          "Select * from Users where Id = ?",
 			expectedError:  nil,
 			expectedOutput: &User{},
 			mock: []interface{}{
-				//mock.ExpectQuery(Select * from Users where Id = ?).WithArgs(9).WillReturnError(errors.New("error,")),
+
 				mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(15).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(0, "", 0, "", false)),
 			},
-		},*/
-		// {
-		// 	desc: "Case:3",
-		// 	id:   9,
-		// 	//query:          "Select from User swhere Id = ?",
-		// 	expectedError:  errors.New("Error in Query"),
-		// 	expectedOutput: nil,
-		// 	mock: []interface{}{
-		// 		mock.ExpectQuery("Select from Users where Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
-		// 	},
-		// },
+		},
+		{
+			desc: "Case:3",
+			id:   9,
+			//query:          "Select from User where Id = ?",
+			expectedError:  errors.New("Error in Query"),
+			expectedOutput: nil,
+			mock: []interface{}{
+				mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
+			},
+		},
 	}
 
 	for _, tcs := range testcases {
 
-		//fmt.Println("gfhh")
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
-
-		// t.Run(tcs.desc, func(t *testing.T) {
-
 		resp, err := u.ReadByID(tcs.id)
-		//fmt.Println("gfhh")
+
 		if !reflect.DeepEqual(resp, tcs.expectedOutput) {
 			t.Errorf("Expected %v Got %v\n", tcs.expectedOutput, resp)
 		}
@@ -105,7 +99,6 @@ func Test_ReadByID(t *testing.T) {
 		}
 
 		fmt.Printf("Expected %v Got %v\n", tcs.expectedOutput, resp)
-		// })
 
 	}
 }
@@ -130,29 +123,22 @@ func Test_Create(t *testing.T) {
 			expectedLastInsertId: 1,
 			expectedAffected:     1,
 			mock: []interface{}{
-				mock.ExpectExec("INSERT INTO Users").WithArgs("Rohit", 34, "Whitefield, Bangalore", false).WillReturnResult(sqlmock.NewResult(1, 1)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
-			},
+				mock.ExpectExec("INSERT INTO Users").WithArgs("Rohit", 34, "Whitefield, Bangalore", false).WillReturnResult(sqlmock.NewResult(1, 1))},
 		},
 
-		/*{
+		{
 			desc: "Case:2",
-			//value: User{0,"Rohit",34,"Whitefield, Bangalore",false},
 			//query:          "Select from User swhere Id = ?",
-			expectedError:  errors.New("Error in Query"),
-			expectedOutput: nil,
+			expectedError:        errors.New("Error in Query"),
+			expectedLastInsertId: 0,
+			expectedAffected:     -1,
 			mock: []interface{}{
-				mock.ExpectQuery("INSERT INTO Users(Name, Age , Address ,Del ) values('Rohit',34,'Whitefield, Bangalore','0')").WithArgs().WillReturnError(errors.New("Error in Query")),
+				mock.ExpectExec("INSERT INTO Users").WithArgs("Itachi", 34, "Whitefield, Bangalore", false).WithArgs().WillReturnError(errors.New("Error in Query")),
 			},
-		},*/
+		},
 	}
 
 	for _, tcs := range testcases {
-
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
-
-		// t.Run(tcs.desc, func(t *testing.T) {
 
 		resp1, resp2, err := u.Create(tcs.value)
 		if resp1 != tcs.expectedLastInsertId {
@@ -169,9 +155,6 @@ func Test_Create(t *testing.T) {
 		if err != nil {
 			fmt.Printf("Expected %v Got %v\n", tcs.expectedError, err)
 		}
-
-		//fmt.Printf("Expected Affected %v Got %v Expected LastInsertId %v Got %v \n", tcs.expectedAffected, resp1, tcs.expectedLastInsertId, resp2)
-		// })
 
 	}
 }
@@ -194,29 +177,25 @@ func Test_Read(t *testing.T) {
 			expectedOutput: &User{Id: 5, Name: "Karun", Age: 20, Address: "HSR, Bangalore", Del: false},
 			mock: []interface{}{
 				mock.ExpectQuery("Select * from Users").WithArgs().WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
-		/*{
+		{
 
-		   {
 			desc: "Case:2",
-			id:   9,
+			//id:   9,
 			//query:          "Select from User swhere Id = ?",
 			expectedError:  errors.New("Error in Query"),
 			expectedOutput: nil,
 			mock: []interface{}{
-				mock.ExpectQuery("Select from Users where Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
+				mock.ExpectQuery("Select * from Users").WithArgs().WillReturnError(errors.New("Error in Query")),
 			},
-		},*/
+		},
 	}
 
 	for _, tcs := range testcases {
 
 		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
 		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
-
-		// t.Run(tcs.desc, func(t *testing.T) {
 
 		resp, err := u.Read()
 		if !reflect.DeepEqual(resp, tcs.expectedOutput) {
@@ -231,7 +210,6 @@ func Test_Read(t *testing.T) {
 		}
 
 		fmt.Printf("Expected %v Got %v\n", tcs.expectedOutput, resp)
-		// })
 
 	}
 }
@@ -260,11 +238,10 @@ func Test_Update(t *testing.T) {
 			expectedAffected:     1,
 			mock: []interface{}{
 				mock.ExpectExec("Update Users Set Name = ? where Id = ?").WithArgs("Jack", 5).WillReturnResult(sqlmock.NewResult(1, 1)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
 		{
-			desc:                 "Case:1",
+			desc:                 "Case:2",
 			value:                "Jack",
 			id:                   65,
 			expectedError:        nil,
@@ -272,27 +249,22 @@ func Test_Update(t *testing.T) {
 			expectedAffected:     0,
 			mock: []interface{}{
 				mock.ExpectExec("Update Users Set Name = ? where Id = ?").WithArgs("Jack", 65).WillReturnResult(sqlmock.NewResult(0, 0)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
-		/*{
-			desc: "Case:3",
-			id:   9,
-			//query:          "Select from User swhere Id = ?",
-			expectedError:  errors.New("Error in Query"),
-			expectedOutput: nil,
+		{
+			desc:                 "Case:3",
+			id:                   9,
+			value:                "Jack",
+			expectedError:        errors.New("Error in Query"),
+			expectedLastInsertId: 0,
+			expectedAffected:     -1,
 			mock: []interface{}{
-				mock.ExpectQuery("Select from Users where Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
+				mock.ExpectExec("Update Users Set Name = ? where Id = ?").WithArgs("Jack", 9).WillReturnError(errors.New("Error in Query")),
 			},
-		},*/
+		},
 	}
 
 	for _, tcs := range testcases {
-
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
-
-		// t.Run(tcs.desc, func(t *testing.T) {
 
 		resp1, resp2, err := u.Update(tcs.value, tcs.id)
 
@@ -310,7 +282,6 @@ func Test_Update(t *testing.T) {
 		if err != nil {
 			fmt.Printf("Expected %v Got %v\n", tcs.expectedError, err)
 		}
-		// })
 
 	}
 }
@@ -339,11 +310,10 @@ func Test_Delete(t *testing.T) {
 			expectedAffected:     1,
 			mock: []interface{}{
 				mock.ExpectExec("DELETE FROM Users WHERE Id = ?").WithArgs(6).WillReturnResult(sqlmock.NewResult(1, 1)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
 		{
-			desc: "Case:1",
+			desc: "Case:2",
 			//value:                "Jack",
 			id:                   36,
 			expectedError:        nil,
@@ -351,27 +321,22 @@ func Test_Delete(t *testing.T) {
 			expectedAffected:     0,
 			mock: []interface{}{
 				mock.ExpectExec("DELETE FROM Users WHERE Id = ?").WithArgs(36).WillReturnResult(sqlmock.NewResult(0, 0)),
-				//mock.ExpectQuery("Select * from Users where Id = ?").WithArgs(5).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(5, "Karun", 20, "HSR, Bangalore", false)),
 			},
 		},
-		/*{
+		{
 			desc: "Case:3",
 			id:   9,
 			//query:          "Select from User swhere Id = ?",
-			expectedError:  errors.New("Error in Query"),
-			expectedOutput: nil,
+			expectedError:        errors.New("Error in Query"),
+			expectedLastInsertId: 0,
+			expectedAffected:     -1,
 			mock: []interface{}{
-				mock.ExpectQuery("Select from Users where Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
+				mock.ExpectExec("DELETE FROM Users WHERE Id = ?").WithArgs(9).WillReturnError(errors.New("Error in Query")),
 			},
-		},*/
+		},
 	}
 
 	for _, tcs := range testcases {
-
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
-
-		// t.Run(tcs.desc, func(t *testing.T) {
 
 		resp1, resp2, err := u.Delete(tcs.id)
 
@@ -389,7 +354,6 @@ func Test_Delete(t *testing.T) {
 		if err != nil {
 			fmt.Printf("Expected %v Got %v\n", tcs.expectedError, err)
 		}
-		// })
 
 	}
 }
