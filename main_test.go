@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	//"github.com/golang/mock/gomock"
-
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
@@ -44,9 +42,8 @@ func Test_ReadByID(t *testing.T) {
 	u := New(db)
 
 	testcases := []struct {
-		desc string
-		id   int
-		//query          string
+		desc           string
+		id             int
 		expectedError  error
 		expectedOutput *User
 		mock           []interface{}
@@ -61,9 +58,8 @@ func Test_ReadByID(t *testing.T) {
 			},
 		},
 		{
-			desc: "Case:2",
-			id:   15,
-			//query:          "Select * from Users where Id = ?",
+			desc:           "Case:2",
+			id:             15,
 			expectedError:  nil,
 			expectedOutput: &User{},
 			mock: []interface{}{
@@ -72,9 +68,8 @@ func Test_ReadByID(t *testing.T) {
 			},
 		},
 		{
-			desc: "Case:3",
-			id:   9,
-			//query:          "Select from User where Id = ?",
+			desc:           "Case:3",
+			id:             9,
 			expectedError:  errors.New("Error in Query"),
 			expectedOutput: nil,
 			mock: []interface{}{
@@ -127,8 +122,7 @@ func Test_Create(t *testing.T) {
 		},
 
 		{
-			desc: "Case:2",
-			//query:          "Select from User swhere Id = ?",
+			desc:                 "Case:2",
 			expectedError:        errors.New("Error in Query"),
 			expectedLastInsertId: 0,
 			expectedAffected:     -1,
@@ -165,8 +159,7 @@ func Test_Read(t *testing.T) {
 	u := New(db)
 
 	testcases := []struct {
-		desc string
-		//query          string
+		desc           string
 		expectedError  error
 		expectedOutput *User
 		mock           []interface{}
@@ -181,9 +174,7 @@ func Test_Read(t *testing.T) {
 		},
 		{
 
-			desc: "Case:2",
-			//id:   9,
-			//query:          "Select from User swhere Id = ?",
+			desc:           "Case:2",
 			expectedError:  errors.New("Error in Query"),
 			expectedOutput: nil,
 			mock: []interface{}{
@@ -193,9 +184,6 @@ func Test_Read(t *testing.T) {
 	}
 
 	for _, tcs := range testcases {
-
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnRows(sqlmock.NewRows([]string{"Id", "Name", "Age", "Address", "Del"}).AddRow(tcs.expectedOutput.Id, tcs.expectedOutput.Name, tcs.expectedOutput.Age, tcs.expectedOutput.Address, tcs.expectedOutput.Del))
-		//mock.ExpectQuery(tcs.query).WithArgs(tcs.id).WillReturnError(errors.New("conn"))
 
 		resp, err := u.Read()
 		if !reflect.DeepEqual(resp, tcs.expectedOutput) {
@@ -220,10 +208,9 @@ func Test_Update(t *testing.T) {
 	u := New(db)
 
 	testcases := []struct {
-		desc  string
-		value string
-		id    int
-		//query          string
+		desc                 string
+		value                string
+		id                   int
 		expectedError        error
 		expectedLastInsertId int64
 		expectedAffected     int64
@@ -292,18 +279,15 @@ func Test_Delete(t *testing.T) {
 	u := New(db)
 
 	testcases := []struct {
-		desc string
-		//value string
-		id int
-		//query          string
+		desc                 string
+		id                   int
 		expectedError        error
 		expectedLastInsertId int64
 		expectedAffected     int64
 		mock                 []interface{}
 	}{
 		{
-			desc: "Case:1",
-			//value:                "Jack",
+			desc:                 "Case:1",
 			id:                   6,
 			expectedError:        nil,
 			expectedLastInsertId: 1,
@@ -313,8 +297,7 @@ func Test_Delete(t *testing.T) {
 			},
 		},
 		{
-			desc: "Case:2",
-			//value:                "Jack",
+			desc:                 "Case:2",
 			id:                   36,
 			expectedError:        nil,
 			expectedLastInsertId: 0,
@@ -324,9 +307,8 @@ func Test_Delete(t *testing.T) {
 			},
 		},
 		{
-			desc: "Case:3",
-			id:   9,
-			//query:          "Select from User swhere Id = ?",
+			desc:                 "Case:3",
+			id:                   9,
 			expectedError:        errors.New("Error in Query"),
 			expectedLastInsertId: 0,
 			expectedAffected:     -1,

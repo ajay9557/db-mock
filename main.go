@@ -23,7 +23,6 @@ type DbUser struct {
 
 func (u *DbUser) Create(value User) (int64, int64, error) {
 
-	//user := &User{}
 	query := "INSERT INTO Users(Name, Age , Address ,Del ) values(?, ?, ?, ?)"
 	res, err := u.db.Exec(query, value.Name, value.Age, value.Address, value.Del)
 
@@ -59,7 +58,6 @@ func (u *DbUser) ReadByID(id int) (*User, error) {
 
 	if err != nil {
 
-		//return nil, errors.New("Error in Query")
 		return nil, err
 	}
 
@@ -80,7 +78,7 @@ func (u *DbUser) Read() (*User, error) {
 	rows, err := u.db.Query(query)
 
 	if err != nil {
-		//log.Fatalf("Error in fetching the user %s", err)
+
 		return nil, errors.New("Error in Query")
 	}
 
@@ -97,12 +95,6 @@ func (u *DbUser) Read() (*User, error) {
 func (u *DbUser) Update(value string, id int) (int64, int64, error) {
 
 	query := "Update Users Set Name = ? where Id = ?"
-	/*stmt, err := u.db.Prepare(query)
-	if err != nil {
-		fmt.Println("Error while preparing the statement, err: ", err)
-		return 0, -1, err
-	}*/
-
 	result, err := u.db.Exec(query, value, id)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -129,11 +121,6 @@ func (u *DbUser) Update(value string, id int) (int64, int64, error) {
 func (u *DbUser) Delete(id int) (int64, int64, error) {
 
 	query := "DELETE FROM Users WHERE Id = ?"
-	/*stmt, err := v.Prepare(query)
-	if err != nil {
-		fmt.Println("Error while preparing the statement, err: ", err)
-		return 0, err
-	}*/
 
 	result, err := u.db.Exec(query, id)
 	if err != nil {
@@ -176,5 +163,5 @@ func main() {
 	u.Read()
 	u.ReadByID(1)
 	u.Update("Shiv", 5)
-	//u.Delete(11)
+	u.Delete(11)
 }
