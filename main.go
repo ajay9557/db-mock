@@ -101,35 +101,9 @@ func (db *SqlDB) SelectAllStudents() ([]Student, error) {
 func main() {
 	connection, _ := connectDb()
 	dbconn := SqlDB{connection}
-	/*
-		var n int
 
-		fmt.Println("1.Insert")
-		fmt.Println("2.Select")
-		fmt.Println("3.Select Rows By Id")
-		fmt.Println("4.Update")
-		fmt.Println("5.Delete")
-		fmt.Printf("\nEnter Your Choice :")
-		fmt.Scanln(&n)
-
-		switch n {
-		case 1:
-			fmt.Println(dbconn.InsertStudent(9, "sanjay", "Banglore"))
-		case 2:
-			fmt.Println(dbconn.SelectStudentById(1))
-		case 3:
-			fmt.Println(dbconn.SelectStudentById(4))
-		case 4:
-			fmt.Println(dbconn.UpdateStudent(4, "suhas", "pune"))
-		case 5:
-			fmt.Println(dbconn.DeleteStudent(2))
-		default:
-			fmt.Println("Enter a valid option.")
-		}
-
-	*/
-	// fmt.Println(dbconn.InsertStudent(4, "madhu", "Banglore"))
+	fmt.Println(dbconn.InsertStudent(4, "madhu", "Banglore"))
 	fmt.Println(dbconn.SelectStudentById(4))
-	// fmt.Println(dbconn.UpdateStudent(4, "suhas", "pune"))
-	// fmt.Println(dbconn.DeleteStudent(4))
+	fmt.Println(dbconn.UpdateStudent(4, "suhas", "pune"))
+	fmt.Println(dbconn.DeleteStudent(4))
 }
