@@ -40,8 +40,7 @@ func GetValuesById(db *sql.DB, tableName string, pk int) (user User, err error) 
 func InsertValues(db *sql.DB, tableName string, id, age int, name string) (err error) {
 
 	// form the query string according to the inputs
-	query := fmt.Sprintf("INSERT INTO user(id, name, age) VALUES (?, ?, ?)")
-
+	query := "INSERT INTO user(id, name, age) VALUES (?, ?, ?)"
 	_, err = db.Exec(query, id, name, age)
 	if err != nil {
 		return errors.New("error inserting values")
@@ -61,9 +60,9 @@ func DeleteRecord(db *sql.DB, tableName string, pk int) error {
 func UpdateRecord(db *sql.DB, tableName string, pk int, column string, value interface{}) error {
 	var err error
 	var query string
-	switch value.(type) {
+	switch value := value.(type) {
 	case string:
-		query = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE id = %v;", tableName, column, value.(string), pk)
+		query = fmt.Sprintf("UPDATE %s SET %s = '%v' WHERE id = %v;", tableName, column, value, pk)
 		_, err = db.Exec(query)
 	default:
 		query = fmt.Sprintf("UPDATE %s SET %s = %v WHERE id = %v;", tableName, column, value, pk)

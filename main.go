@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"dbMocking/userDB"
+	"db-mock/userDB"
 	"fmt"
 	"log"
 	"math/rand"
@@ -58,5 +58,8 @@ func main() {
 		log.Printf("error updating row : Error %v", err)
 	}
 
-	db.Exec("DROP TABLE user")
+	_, err = db.Exec("DROP TABLE user")
+	if err != nil {
+		log.Printf("error executing query")
+	}
 }

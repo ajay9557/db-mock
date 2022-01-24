@@ -24,11 +24,14 @@ func TestCreateTable(t *testing.T) {
 		mockQuery   *sqlmock.ExpectedExec
 		expected    error
 	}{
+		// Success case
 		{
 			tableName:   "user",
 			tableSchema: "id INT NOT NULL AUTO_INCREMENT,name VARCHAR(255) NOT NULL,age INT NOT NULL,deleted INT NOT NULL DEFAULT 0,PRIMARY KEY (id)",
 			mockQuery: mock.ExpectExec("CREATE TABLE IF NOT EXISTS user ( id INT NOT NULL AUTO_INCREMENT,name VARCHAR(255) NOT NULL,age INT NOT NULL,deleted INT NOT NULL DEFAULT 0,PRIMARY KEY (id) )").
 				WillReturnResult(sqlmock.NewResult(1, 1)), expected: nil},
+
+		// Failing case
 		{
 			tableName:   "stats",
 			tableSchema: "id INT NOT NULL AUTO_INCREMEN,",
@@ -66,9 +69,24 @@ func TestGetValuesById(t *testing.T) {
 		mockQuery   *sqlmock.ExpectedQuery
 		expectError error
 	}{
-		{id: 1, user: User{1, "John", 20, 0}, mockQuery: mock.ExpectQuery("SELECT * FROM user WHERE id = ?").WithArgs(1).WillReturnRows(rows), expectError: nil},
-		{id: 3, user: User{0, "", 0, 0}, mockQuery: nil, expectError: sql.ErrNoRows},
-		{id: 2, user: User{2, "Jane", 21, 0}, mockQuery: mock.ExpectQuery("SELECT * FROM user WHERE id = ?").WithArgs(2).WillReturnRows(rows), expectError: nil},
+		// Success case
+		{
+			id:          1,
+			user:        User{1, "John", 20, 0},
+			mockQuery:   mock.ExpectQuery("SELECT * FROM user WHERE id = ?").WithArgs(1).WillReturnRows(rows),
+			expectError: nil},
+		// Error case
+		{
+			id:          3,
+			user:        User{0, "", 0, 0},
+			mockQuery:   nil,
+			expectError: sql.ErrNoRows},
+		// Success case
+		{
+			id:          2,
+			user:        User{2, "Jane", 21, 0},
+			mockQuery:   mock.ExpectQuery("SELECT * FROM user WHERE id = ?").WithArgs(2).WillReturnRows(rows),
+			expectError: nil},
 	}
 
 	for _, testCase := range testCases {
@@ -100,8 +118,19 @@ func TestInsertValues(t *testing.T) {
 		mockQuery   *sqlmock.ExpectedExec
 		expectedErr error
 	}{
-		{user: User{1, "John", 20, 0}, mockQuery: mock.ExpectExec("INSERT INTO user(id, name, age) VALUES (?, ?, ?)").WithArgs(1, "John", 20).WillReturnResult(sqlmock.NewResult(1, 1)), expectedErr: nil},
-		{user: User{1, "Jane", 21, 0}, mockQuery: nil, expectedErr: errors.New("error inserting values")},
+		// Success case
+		{
+			user: User{1, "John", 20, 0},
+			mockQuery: mock.ExpectExec("INSERT INTO user(id, name, age) VALUES (?, ?, ?)").
+				WithArgs(1, "John", 20).
+				WillReturnResult(sqlmock.NewResult(1, 1)),
+			expectedErr: nil},
+
+		// Error case
+		{
+			user:        User{1, "Jane", 21, 0},
+			mockQuery:   nil,
+			expectedErr: errors.New("error inserting values")},
 	}
 
 	for _, testCase := range testCases {
@@ -129,8 +158,21 @@ func TestDeleteRecord(t *testing.T) {
 		mockExec *sqlmock.ExpectedExec
 		expected error
 	}{
-		{id: 1, mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").WithArgs(1).WillReturnResult(sqlmock.NewResult(1, 1)), expected: nil},
-		{id: 10, mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").WithArgs(1).WillReturnError(errors.New("error deleting record")), expected: errors.New("error deleting record")},
+		// Success case
+		{
+			id: 1,
+			mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").
+				WithArgs(1).
+				WillReturnResult(sqlmock.NewResult(1, 1)),
+			expected: nil},
+
+		// Error case
+		{
+			id: 10,
+			mockExec: mock.ExpectExec("UPDATE user SET deleted = 1 WHERE id = ?").
+				WithArgs(1).
+				WillReturnError(errors.New("error deleting record")),
+			expected: errors.New("error deleting record")},
 	}
 
 	for _, testCase := range testCases {
@@ -160,23 +202,32 @@ func TestUpdateRecord(t *testing.T) {
 		mockExec *sqlmock.ExpectedExec
 		expected error
 	}{
+		
+		// Success case
 		{
-			id:       1,
-			column:   "name",
-			value:    "John",
-			mockExec: mock.ExpectExec("UPDATE user SET name = 'John' WHERE id = 1;").WillReturnResult(sqlmock.NewResult(1, 1)),
+			id:     1,
+			column: "name",
+			value:  "John",
+			mockExec: mock.ExpectExec("UPDATE user SET name = 'John' WHERE id = 1;").
+				WillReturnResult(sqlmock.NewResult(1, 1)),
 			expected: nil},
+
+		// Success case
 		{
-			id:       1,
-			column:   "age",
-			value:    20,
-			mockExec: mock.ExpectExec("UPDATE user SET age = 20 WHERE id = 1;").WillReturnResult(sqlmock.NewResult(1, 1)),
+			id:     1,
+			column: "age",
+			value:  20,
+			mockExec: mock.ExpectExec("UPDATE user SET age = 20 WHERE id = 1;").
+				WillReturnResult(sqlmock.NewResult(1, 1)),
 			expected: nil},
+
+		// Error case
 		{
-			id:       10,
-			column:   "name",
-			value:    "Jane",
-			mockExec: mock.ExpectExec("UPDATE user SET name = 'Jane' WHERE id = 10;").WillReturnError(errors.New("error updating the records")),
+			id:     10,
+			column: "name",
+			value:  "Jane",
+			mockExec: mock.ExpectExec("UPDATE user SET name = 'Jane' WHERE id = 10;").
+				WillReturnError(errors.New("error updating the records")),
 			expected: errors.New("error updating the records")},
 	}
 
